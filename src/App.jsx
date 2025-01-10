@@ -1,35 +1,55 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import Card from "./components/Card";
+import TodayDisplay from "./components/TodayDisplay";
+import UnitContainer from "./components/UnitContainer";
+import "./App.css";
+import { useEffect, useState } from "react";
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  const [location, setLocation] = useState(null);
+  const [error, setError] = useState(null);
+  const [data, setData] = useState(null);
+  const [unit, setUnit] = useState("celcius");
+  const getLocation = () => {
+    if (!navigator.geolocation) {
+      setError("Location API is not supported by your browser");
+    } else {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocation(position.coords);
+        },
+        () => {
+          setError("Sorry, we cannot find you location");
+        }
+      );
+    }
+  };
+  const fetchData = () => {
+    const longitude = location?.longitude;
+    const latitude = location?.latitude;
+    fetch(
+      `http://www.7timer.info/bin/api.pl?lon=${longitude}&lat=${latitude}&product=civillight&output=json`
+    )
+      .then((Response) => Response.json())
+      .then((json) => setData(json))
+      .catch((err) => console.error(err));
+  };
+  console.log(data);
+  const handleClick = (e) => setUnit(e.target.id);
+  useEffect(() => {
+    getLocation();
+    fetchData();
+  }, []);
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="weather-app">
+      <TodayDisplay today={data?.dataseries[0]} location={location} />
+      <div className="cards-container">
+        {data?.dataseries.map((day, index) => (
+          <Card key={index} day={day} index={index} unit={unit} />
+        ))}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+      <UnitContainer handleClick={handleClick} unit={unit} />
+    </div>
+  );
 }
 
-export default App
+export default App;
