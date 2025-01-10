@@ -12,7 +12,7 @@ const Card = ({ day, index, unit }) => {
   const unitShorthand =
     unit === "kelvin"
       ? unit.slice(0, 1).toUpperCase()
-      : "." + unit.slice(0, 1).toUpperCase();
+      : "°" + unit.slice(0, 1).toUpperCase();
   return (
     <div className="card-container">
       <h3>{index === 0 ? "Today" : formattedDate}</h3>

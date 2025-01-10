@@ -8,21 +8,21 @@ const UnitContainer = ({ handleClick, unit }) => {
         id="celcius"
         onClick={handleClick}
       >
-        .C
+        °C
       </button>
       <button
         className={unit === "fahrenheit" ? null : "greyed"}
         id="fahrenheit"
         onClick={handleClick}
       >
-        .F
+        °F
       </button>
       <button
         id="kelvin"
         className={unit === "kelvin" ? null : "greyed"}
         onClick={handleClick}
       >
-        K
+        °K
       </button>
     </div>
   );
